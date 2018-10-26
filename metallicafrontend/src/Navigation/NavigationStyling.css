@@ -1,0 +1,23 @@
+.navbar{
+    font-size: 20px;
+    border-radius:unset;
+    height: 55px;
+  }
+  .navbar-inverse.navbar-nav li a{
+    color: white;
+  }
+  
+  .navbar-inverse.navbar-nav li a:hover{
+    font-size: 23px;
+  }
+  .navbar-inverse.navbar-nav li a:active{ 
+    font-size: 23px;
+  }
+  .fa.fa-spinner.fa-spin{
+    font-size: 50px;
+  }
+  .navbar-inverse .navbar-brand{
+    font-size: 30px;
+    color: white;
+  }
+  
