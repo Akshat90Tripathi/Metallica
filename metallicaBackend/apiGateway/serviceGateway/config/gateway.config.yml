@@ -1,0 +1,124 @@
+http:
+  port: 8080
+admin:
+  port: 9876
+  hostname: localhost
+
+apiEndpoints:
+  refData:
+    host: 'wkwin6368400'
+    path : ['/Commodity', '/CounterParty' ,'/Location' ]
+ 
+   
+  liveMarketdata:
+    host : 'wkwin6368400'
+    path : ['/LiveMarketData', '/LiveMarketData/:id']
+
+  trade :
+    host: 'wkwin6368400' 
+    path : ['/filter', '/Trade', '/Trade/:id']
+
+
+  users : 
+    host : 'wkwin6368400'
+    path : ['/User/:id', '/User', '/verifyUser']
+  
+  
+  notification:
+    host : 'localhost'
+    path : []  
+
+serviceEndpoints:
+  
+  refData :
+    url : 'http://localhost:3052'
+  liveMarketData :
+    url : 'http://localhost:3050'    
+  trade :
+    url : 'http://localhost:3053'
+  users :
+    url : 'http://localhost:3054'     
+
+policies:
+  # - basic-auth
+  # - expression
+  # - log
+  - proxy
+  - cors 
+     
+  - oauth2
+  # - rate-limit
+
+pipelines:
+
+
+
+   
+  liveMarketdata :
+    apiEndpoints:
+      - liveMarketdata
+    policies:
+    # Uncomment `key-auth:` when instructed to in the Getting Started guide.
+    # - key-auth:
+      - cors :
+          -action : 
+              origin : true
+              methods : 'GET , HEAD , PUT, POST, DELETE'
+              allowHeader : 'Origin, X-Requested-With, Content-Type, Accept '
+
+      - proxy:
+          - action:
+              serviceEndpoint: liveMarketData
+              changeOrigin: true
+              
+
+
+  trade :
+    apiEndpoints:
+      - trade
+    policies:
+    # Uncomment `key-auth:` when instructed to in the Getting Started guide.
+    # - key-auth:
+      - cors :
+          -action : 
+              origin : true
+              methods : 'GET , HEAD , PUT, POST, DELETE'
+              allowHeader : 'Origin, X-Requested-With, Content-Type, Accept '
+          
+      - proxy:
+          - action:
+              serviceEndpoint: trade
+          
+
+  refData :
+    apiEndpoints:
+      - refData
+    policies:
+    # Uncomment `key-auth:` when instructed to in the Getting Started guide.
+      - cors :
+          - action : 
+              origin : true
+              methods : 'GET , HEAD , PUT, POST, DELETE'
+              allowHeader : 'Origin, X-Requested-With, Content-Type, Accept '
+              
+      - proxy:
+          - action:
+              serviceEndpoint: refData
+              changeOrigin: true  
+                 
+
+  users :
+    apiEndpoints:
+      - users
+    policies:
+    # Uncomment `key-auth:` when instructed to in the Getting Started guide.
+      - cors :
+          -action : 
+              origin : true
+              methods : 'GET , HEAD , PUT, POST, DELETE'
+              allowHeader : 'Origin, X-Requested-With, Content-Type, Accept '
+         
+      - proxy:
+          - action:
+              serviceEndpoint: users
+              changeOrigin: true                     

@@ -1,0 +1,19 @@
+{
+  "name": "tradeservice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "TradeController.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "Node ./TradeController"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "^0.5.2",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "msnodesqlv8": "^0.6.6",
+    "mssql": "^4.1.0"
+  }
+}
