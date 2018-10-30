@@ -19,7 +19,7 @@ render() {
             <div className="Register" style={{padding:'20px',backgroundImage:`url(${image})`,backgroundRepeat:'no-repeat',backgroundSize: "cover"}}>
                 <div className="row">
                     <div className="col-md-3 col-sm-3 col-xs-1"></div>
-                    <div style={{opacity:'0.9',backgroundColor:'white'  }}
+                    <div style={{opacity:'0.9',backgroundColor:'White'  }}
                         className="col-md-6 col-sm-6 col-xs-10">
                         <div  align="center">
                             <strong><h2>Register</h2></strong>

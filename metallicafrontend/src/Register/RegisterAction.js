@@ -11,22 +11,25 @@ export const registerUser = (url,UserDetails) => {
             },
             body: JSON.stringify(UserDetails)
         })
-            .then(handleErrors)
+            .then(res=>handleErrors(res))
             .then(res => res.json())
             .then(User => {
                 dispatch(RegisterUserSuccess(User));
-                toast.success("Registered Successfully")
+                if(User.result==="Username Already Exists")
+                toast.error(User.result)
+                else
+                toast.success(User.result)
                 return User;
             
             })
-            .catch(error => {dispatch(RegisterUserFailure(error));toast.error("Username Already Exists")});
+            .catch(error => {dispatch(RegisterUserFailure(error));console.log(error)});
     }
 }
 
 //Handle Api response
 const handleErrors = (response) => {
     if (!response.ok) {
-        throw Error("Connection cant be made ");
+        throw Error(response);
     }
     return response;
 }
