@@ -3,43 +3,36 @@ var app = express();
 const sql = require("msnodesqlv8");
 const connectionString = "server=WKWIN6368400;Database=Metal_Trading;Trusted_Connection=Yes;Driver={SQL Server Native Client 11.0}";
 var bodyParser = require('body-parser');
-var cors = require('cors')
-app.use(cors())
-
-//Cors
-// app.use(function(req, res, next) {
-//     res.header("Access-Control-Allow-Origin","*")
-//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-//     next();
-//   });
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
 var amqp = require('amqplib/callback_api');
 var amqpconn = null;
 var queuedata = null;
 
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin","*")
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    next();
+  });
 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 //GetAllTrades
 app.get('/Trade', function (req, res) {
     query = "Exec GetAllTrades";
     sql.query(connectionString, query, (err, Trades) => {
         if (err) res.send(err);
-        else res.status(200).json(Trades);
+        else res.json(Trades);
     });
 })
-
 
 //GetTradeById
 app.get('/Trade/:id', function (req, res) {
     query = "Exec GetTradeById '" + req.params.id + "'";
     sql.query(connectionString, query, (err, Trade) => {
-        if (err) res.send(err)
+        if (err) res.send(err);
         else res.json(Trade);
     });
-
 })
 
 //Delete Trade
@@ -47,7 +40,7 @@ app.delete('/Trade/:id', function (req, res) {
     query = "Exec DeleteTrade '" + req.params.id + "'";
     var tradeid = req.param.id
     sql.query(connectionString, query, (err, Trade) => {
-        if (err) console.log(err);
+        if (err) res.send(err);
         else {
             res.json(Trade);
             // count=JSON.parse(Trade);
@@ -64,10 +57,6 @@ app.delete('/Trade/:id', function (req, res) {
                 });
                 setTimeout(function () { conn.close(); /*process.exit(0)*/ }, 500);
             });
-
-
-
-
         }
     });
 })
@@ -79,8 +68,7 @@ app.put('/Trade/:id', function (req, res) {
         + "," + req.body.Price + ",'" + req.body.CounterPartyId +
         "','" + req.body.LocationId + "','" + req.body.UserId + "'";
     sql.query(connectionString, query, (err, Trade) => {
-        console.log(query);
-        if (err) console.log(err);
+        if (err) res.send(err);
         else {
             res.json(Trade);
 
@@ -88,16 +76,15 @@ app.put('/Trade/:id', function (req, res) {
                 conn.createChannel(function (err, ch) {
                     var q = 'hello';
                     var msg = JSON.stringify({ data: Trade, status: "Updated" })
-
                     ch.sendToQueue(q, new Buffer(msg));
                     console.log(" [x] Sent %s", msg);
-
                 });
                 setTimeout(function () { conn.close(); /*process.exit(0)*/ }, 500);
             });
         }
     });
 })
+
 var commodityID = null;
 var OrderSide = null;
 // Insert Trade    
@@ -106,17 +93,16 @@ app.post('/Trade', function (req, res) {
         "'," + req.body.Side + "," + req.body.Quantity
         + "," + req.body.Price + ",'" + req.body.CounterPartyId +
         "','" + req.body.LocationId + "','" + req.body.UserId + "'";
-    console.log(query);
     commodityID = req.body.CommodityId;
     OrderSide = req.body.Side;
     sql.query(connectionString, query, (err, TradeData) => {
-        if (err) console.log(err);
+        if (err) res.send(err);
         else {
             res.send(req.body);
             //ADD To Queue
             console.log(TradeData.Id)
             sql.query(connectionString, "Exec DisplayTrade '" + TradeData[0].Id + "'", (err, TradeData) => {
-                if (err) console.log(err);
+                if (err) res.send(err);
                 else {
                     amqp.connect('amqp://localhost', function (err, conn) {
                         conn.createChannel(function (err, ch) {
@@ -148,7 +134,7 @@ app.post('/filter', function (req, res) {
         + JSON.stringify(req.body.PartyName) + "," + JSON.stringify(req.body.LocName);
     console.log(query);
     sql.query(connectionString, query, (err, trade) => {
-        if (err) console.log(err);
+        if (err) res.send(err);
         else res.send(trade);
     });
 
